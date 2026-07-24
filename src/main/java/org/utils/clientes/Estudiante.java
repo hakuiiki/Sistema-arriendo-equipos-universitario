@@ -13,6 +13,25 @@ public class Estudiante extends Clientes{
         this.matricula = matricula;
         this.carrera = carrera;
     }
+
+    public int getMatricula() {
+        return matricula;
+    }
+
+    public String getCarrera() {
+        return carrera;
+    }
+
+    public void setMatricula(int matricula) {
+        this.matricula = matricula;
+    }
+
+    public void setCarrera(String carrera) {
+        this.carrera = carrera;
+    }
+
+    
+
     @Override
     public double getPorcentajeDescuento() {
         return 0;
