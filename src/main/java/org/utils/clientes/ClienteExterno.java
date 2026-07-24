@@ -1,37 +1,36 @@
 package org.utils.clientes;
 
-public class Estudiante extends Clientes{
+public class ClienteExterno extends Clientes{
 
-    private int matricula;
-    private String carrera;
+    private String rut;
+    private String telefono;
     private BeneficiosCliente beneficiosCliente;
 
-    public Estudiante(int id, String nombre, String correo, int saldoCliente, boolean puedeArrendar, int garantia,
-                      int matricula, String carrera){
+    public ClienteExterno(int id, String nombre, String correo, int saldoCliente, boolean puedeArrendar, int garantia,
+                          String rut, String telefono, BeneficiosCliente beneficiosCliente){
 
         super(id, nombre, correo, saldoCliente, puedeArrendar, garantia);
 
-        this.matricula = matricula;
-        this.carrera = carrera;
-        this.beneficiosCliente = BeneficiosCliente.ESTUDIANTE;
+        this.rut = rut;
+        this.telefono = telefono;
+        this.beneficiosCliente = beneficiosCliente;
     }
 
-    public int getMatricula() {
-        return matricula;
+    public String getRut() {
+        return rut;
     }
 
-    public String getCarrera() {
-        return carrera;
+    public String getTelefono() {
+        return telefono;
     }
 
-    public void setMatricula(int matricula) {
-        this.matricula = matricula;
+    public void setRut(String rut) {
+        this.rut = rut;
     }
 
-    public void setCarrera(String carrera) {
-        this.carrera = carrera;
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
-
 
     @Override
     public double getPorcentajeDescuento() {
@@ -55,8 +54,8 @@ public class Estudiante extends Clientes{
     @Override
     public String toString() {
         return super.toString()
-                + ", tipo de cliente: Estudiante"
-                + ", matricula: " + matricula
-                + ", carrera: " + carrera;
+                + ", tipo de cliente: Cliente Externo"
+                + ", RUT: " + rut
+                + ", telefono: " + telefono;
     }
 }

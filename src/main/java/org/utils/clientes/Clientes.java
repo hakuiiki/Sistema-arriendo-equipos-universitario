@@ -8,7 +8,6 @@ public abstract class Clientes {
     private final int id;
     private String nombre;
     private String correo;
-    // para estudiante private int matricula;
     private int saldoCliente;
     private boolean puedeArrendar;
     private int garantia; // saldo retenido temporalmente para el cliente
@@ -84,6 +83,7 @@ public abstract class Clientes {
 
         this.garantia = 0;
     }
+
     public int getId() {
         return id;
     }
