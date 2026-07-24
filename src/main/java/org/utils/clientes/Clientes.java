@@ -68,7 +68,7 @@ public abstract class Clientes {
     }
 
 
-    public void devolverGarantia throws OperacionGarantiaInvalidaException(){
+    public void devolverGarantia() throws OperacionGarantiaInvalidaException{
         if (garantia <= 0){
             throw new OperacionGarantiaInvalidaException("El cliente no posee ninguna garantia retenida");
         }
