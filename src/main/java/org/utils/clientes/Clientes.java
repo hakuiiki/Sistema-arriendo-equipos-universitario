@@ -115,4 +115,13 @@ public abstract class Clientes {
         this.puedeArrendar = false;
     }
 
+    @Override
+    public String toString() {
+        return "ID: " + id
+                + ", nombre: " + nombre
+                + ", correo: @" + correo
+                + ", saldo cliente: $" + saldoCliente
+                + ", puede arrendar: " + (puedeArrendar ? "si" : "no")
+                + ", garantia retenida: $" + garantia;
+    }
 }
