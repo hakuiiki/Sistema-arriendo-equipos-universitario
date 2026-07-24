@@ -7,13 +7,13 @@ public class ClienteExterno extends Clientes{
     private BeneficiosCliente beneficiosCliente;
 
     public ClienteExterno(int id, String nombre, String correo, int saldoCliente, boolean puedeArrendar, int garantia,
-                          String rut, String telefono, BeneficiosCliente beneficiosCliente){
+                          String rut, String telefono){
 
         super(id, nombre, correo, saldoCliente, puedeArrendar, garantia);
 
         this.rut = rut;
         this.telefono = telefono;
-        this.beneficiosCliente = beneficiosCliente;
+        this.beneficiosCliente = BeneficiosCliente.CLIENTE_EXTERNO;
     }
 
     public String getRut() {
