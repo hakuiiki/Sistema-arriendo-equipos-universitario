@@ -26,7 +26,7 @@ public abstract class Clientes {
 
     public abstract int obtenerLimiteArriendos();
 
-    public abstract double calcularGarantia();
+    public abstract int calcularGarantia(int valorArriendo);
 
     public void agregarSaldo(int monto) throws OperacionSaldoInvalidaException {
         if (monto < 0){
