@@ -119,7 +119,7 @@ public abstract class Clientes {
     public String toString() {
         return "ID: " + id
                 + ", nombre: " + nombre
-                + ", correo: @" + correo
+                + ", correo: " + correo
                 + ", saldo cliente: $" + saldoCliente
                 + ", puede arrendar: " + (puedeArrendar ? "si" : "no")
                 + ", garantia retenida: $" + garantia;
