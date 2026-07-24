@@ -43,7 +43,8 @@ public class Estudiante extends Clientes{
     }
 
     @Override
-    public double calcularGarantia() {
-        return 0;
+    public double calcularGarantia(int valorArriendo) {
+        int garantiaFinal = (int)Math.round (valorArriendo * beneficiosCliente.getPorcentajeCobroGarantia());
+        return garantiaFinal;
     }
 }
