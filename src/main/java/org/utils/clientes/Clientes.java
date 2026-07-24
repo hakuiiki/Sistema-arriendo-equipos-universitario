@@ -77,6 +77,13 @@ public abstract class Clientes {
         this.garantia = 0;
     }
 
+    public void cobrarGarantia() throws OperacionGarantiaInvalidaException{
+        if (garantia <= 0){
+            throw new OperacionGarantiaInvalidaException("El cliente no tiene ninguna garantia para cobrarle");
+        }
+
+        this.garantia = 0;
+    }
     public int getId() {
         return id;
     }
