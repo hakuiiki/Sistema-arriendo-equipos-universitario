@@ -68,6 +68,15 @@ public abstract class Clientes {
     }
 
 
+    public void devolverGarantia throws OperacionGarantiaInvalidaException(){
+        if (garantia <= 0){
+            throw new OperacionGarantiaInvalidaException("El cliente no posee ninguna garantia retenida");
+        }
+
+        this.saldoCliente += garantia;
+        this.garantia = 0;
+    }
+
     public int getId() {
         return id;
     }
