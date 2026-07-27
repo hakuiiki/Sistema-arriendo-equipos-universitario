@@ -124,6 +124,16 @@ public class Arriendo implements Comparable<Arriendo>{
 
     @Override
     public int compareTo(Arriendo otroArriendo) {
-        return this.fechaDevolucionEsperada.compareTo( otroArriendo.fechaDevolucionEsperada );
+
+        /** si las fechas esperadas son distintas se compara segun ese orden */
+        int comparacionFecha = this.fechaDevolucionEsperada.compareTo(otroArriendo.fechaDevolucionEsperada);
+
+        // si son fechas distintas, se ordena yendo primero la fecha que sea mas proxima, osea para la que falte menos
+        if(comparacionFecha != 0){
+            return this.fechaDevolucionEsperada.compareTo( otroArriendo.fechaDevolucionEsperada );
+        }
+
+        // si son fechas iguales, ordenamos segun el ID comparando cual es menor para dejarlo primero
+        return Integer.compare(this.id, otroArriendo.id);
     }
 }
