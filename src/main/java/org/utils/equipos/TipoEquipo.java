@@ -20,11 +20,11 @@ public enum TipoEquipo {
         return tarifaDiaria;
     }
 
-    private int getGarantiaBase(){
+    public int getGarantiaBase(){
         return tarifaDiaria;
     }
 
-    private int getMaximoDias(){
+    public int getMaximoDias(){
         return maximoDias;
     }
 }

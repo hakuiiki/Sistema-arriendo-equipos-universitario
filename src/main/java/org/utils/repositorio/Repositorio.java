@@ -11,7 +11,7 @@ public class Repositorio<T> {
     }
 
     public void agregarElemento (T elemento){
-        repositorio.add(T elemento);
+        repositorio.add(elemento);
     }
 
     public T getPorIndice (int indice){

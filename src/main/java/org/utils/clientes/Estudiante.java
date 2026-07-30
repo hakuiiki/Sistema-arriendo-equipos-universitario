@@ -44,11 +44,11 @@ public class Estudiante extends Clientes{
     }
 
     /** devuelve la garantia total que se le cobrara al cliente, se usa Math.round para redondear al entero mas cercano
-     * osea que si fuera valorArriendo * porcentajeGarantia = 5000.10, se redonde a a 5000
+     * osea que si fuera garantiaBase * porcentajeGarantia = 5000.10, se redonde a a 5000
      */
     @Override
-    public int calcularGarantia(int valorArriendo) {
-        int garantiaFinal = (int)Math.round (valorArriendo * beneficiosCliente.getPorcentajeCobroGarantia());
+    public int calcularGarantia(int garantiaBase) {
+        int garantiaFinal = (int)Math.round (garantiaBase * beneficiosCliente.getPorcentajeCobroGarantia());
         return garantiaFinal;
     }
 
