@@ -8,6 +8,8 @@ import org.utils.repositorio.Repositorio;
 import java.time.LocalDate;
 
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class GestorArriendos {
@@ -31,42 +33,54 @@ public class GestorArriendos {
         this.siguienteIdArriendo = 1;
     }
 
+    /** metodos auxiliares de busqueda */
+
+    public Arriendo buscarArriendoPorId(int idArriendo) throws ArriendoNoEncontradoException {
+        Arriendo arriendoBuscado = null;
+        for(Arriendo arriendo : repositorioArriendos.obtenerRepositorio()){
+            if(arriendo.getId() == idArriendo){
+                arriendoBuscado = arriendo;
+                return arriendoBuscado;
+            }
+        }
+
+        throw new ArriendoNoEncontradoException("El arriendo ingresado por su ID: " + idArriendo + " no fue encontrado.");
+
+    }
+
+    private Equipo buscarEquipoPorId(int idEquipo) throws EquipoNoEncontradoException {
+
+        for (Equipo equipo : repositorioEquipos.obtenerRepositorio()) {
+            if (equipo.getId() == idEquipo) {
+                return equipo;
+            }
+        }
+
+        throw new EquipoNoEncontradoException("No se encontró un equipo con el ID: " + idEquipo);
+    }
+
+    private Clientes buscarClientePorId(int idCliente) throws ClienteNoEncontradoException {
+
+        for (Clientes cliente : repositorioClientes.obtenerRepositorio()) {
+            if (cliente.getId() == idCliente) {
+                return cliente;
+            }
+        }
+
+        throw new ClienteNoEncontradoException("No se encontró un cliente con el ID: " + idCliente);
+    }
+
     public Arriendo iniciarArriendo(int idClienteBuscado, int idEquipoBuscado, LocalDate fechaInicio, LocalDate fechaDevolucionEsperada)
             throws ClienteNoEncontradoException, EquipoNoEncontradoException, ClienteNoPuedeArrendarException,
             LimiteArriendosExcedidoException, AccionArriendoInvalidaException{
 
-        Clientes clienteArriendo = null;
-
         // 1 - Buscaremos al cliente del arriendo a iniciar segun su ID en el Repositorio Clientes
         // usamos obtenerRepositorio para obtener el objeto ArrayList el cual es iterable con el for-each
         // porque repositorioClientes como objeto Repositorio no es iterable
-        for (Clientes cliente : repositorioClientes.obtenerRepositorio()){
-
-            if (cliente.getId() == idClienteBuscado){
-                clienteArriendo = cliente;
-                break;
-            }
-        }
-
-        if (clienteArriendo == null){
-            throw new ClienteNoEncontradoException("El cliente no fue encontrado segun el ID: " + idClienteBuscado + " ingresado");
-        }
-
-        Equipo equipoArriendo = null;
+        Clientes clienteArriendo = buscarClientePorId(idClienteBuscado);
 
         // 2 - Buscaremos al equipo del arriendo segun su ID en el Repositorio
-
-        for(Equipo equipo : repositorioEquipos.obtenerRepositorio()){
-
-            if (equipo.getId() == idEquipoBuscado){
-                equipoArriendo = equipo;
-                break;
-            }
-        }
-
-        if(equipoArriendo == null){
-            throw new EquipoNoEncontradoException("El equipo no fue encontrado segun el ID: " + idEquipoBuscado + " ingresado");
-        }
+        Equipo equipoArriendo = buscarEquipoPorId(idEquipoBuscado);
 
 
         // 3 - Necesitamos verificar que el cliente pueda arrendar
@@ -156,7 +170,105 @@ public class GestorArriendos {
     }
 
 
-    public void registrarDevolucion(int idArriendo, LocalDate fechaDevolucionReal){
-        
+    public void registrarDevolucion(int idArriendoDevolucion, LocalDate fechaDevolucionEsperada, LocalDate fechaDevolucionReal,
+                                    boolean equipoDañado) throws ArriendoNoEncontradoException, AccionArriendoInvalidaException{
+
+        // 1 -  Busca el arriendo en el repositorio de arriendos segun su ID
+        Arriendo arriendoBuscado = buscarArriendoPorId(idArriendoDevolucion);
+
+        // 2 - Comprobamos que el arriendo que buscamos siga activo
+        // Pues no debemos permitir que se intente devolver dos veces el mismo arriendo
+        if(!arriendoBuscado.estaActivo()){
+            throw new AccionArriendoInvalidaException("El arriendo esta inactivo");
+        }
+
+        // 3 - Verificamos si hubo atraso en la devolucion del arriendo para hacer una multa
+        // la multa sera del 50% del valor de la tarifa diaria
+        // si no le alcanza pa pagarla cago nomas ajajja bloqueada por perra
+        int tarifaDiaria = arriendoBuscado.getEquipo().getTipoEquipo().getTarifaDiaria();
+        int multaDiaria = (int) Math.round(tarifaDiaria * 0.50);
+
+        long diasAtraso = ChronoUnit.DAYS.between(fechaDevolucionEsperada, fechaDevolucionReal);
+        boolean clienteBloqueado = false;
+
+        if (arriendoBuscado.estaAtrasado(fechaDevolucionReal)){
+            int multa = Math.toIntExact(multaDiaria * diasAtraso);
+            int saldoCliente = arriendoBuscado.getCliente().getSaldoCliente();
+
+            if (saldoCliente >= multa){
+                arriendoBuscado.getCliente().descontarSaldo(multa);
+            } else {
+                clienteBloqueado = true;
+                arriendoBuscado.getCliente().bloquearArriendos();
+            }
+        }
+
+        // 4 - Marcamos el equipo como disponible o arrendado, ademas cobramos garantia segun la circunstancia
+        if (equipoDañado){
+            arriendoBuscado.getEquipo().enviarMantenimiento();
+            // la garantia aca NO la devolvemos
+        } else {
+            arriendoBuscado.getEquipo().marcarDisponible();
+            int garantiaDevolver = arriendoBuscado.getGarantiaCobrada();
+
+            arriendoBuscado.getCliente().agregarSaldo(garantiaDevolver);
+
+        }
+    }
+
+    /** metodo que devuelve la lista de arriendos de un cliente en particular, segun la id ingresada */
+    public ArrayList<Arriendo> obtenerArriendosCliente(int idCliente) throws ClienteNoEncontradoException {
+
+        // verificamos que el cliente exista
+        buscarClientePorId(idCliente);
+
+        ArrayList<Arriendo> arriendosCliente = new ArrayList<>();
+
+        for(Arriendo arriendo : repositorioArriendos){
+            if(arriendo.getCliente().getId() == idCliente){
+                arriendosCliente.add(arriendo);
+            }
+        }
+
+        return arriendosCliente;
+    }
+
+    public ArrayList<Arriendo> obtenerArriendosActivos() {
+
+        ArrayList<Arriendo> arriendosActivos = new ArrayList<>();
+
+        for (Arriendo arriendo : repositorioArriendos.obtenerRepositorio()) {
+
+            if (!arriendo.isArriendoFinalizado()) {
+                arriendosActivos.add(arriendo);
+            }
+        }
+
+        return arriendosActivos;
+    }
+
+    public ArrayList<Arriendo> obtenerArriendosAtrasados(LocalDate fechaConsulta)
+            throws AccionArriendoInvalidaException {
+
+        ArrayList<Arriendo> arriendosAtrasados = new ArrayList<>();
+
+        for (Arriendo arriendo : repositorioArriendos.obtenerRepositorio()) {
+
+            if (arriendo.estaAtrasado(fechaConsulta)) {
+                arriendosAtrasados.add(arriendo);
+            }
+        }
+
+        return arriendosAtrasados;
+    }
+
+    /** metodo para obtener el repositorio de arriendos ordenado segun el criterio de la clase Arriendo.java con su compareTo() */
+    public ArrayList<Arriendo> obtenerArriendosOrdenados() {
+
+        ArrayList<Arriendo> arriendosOrdenados = repositorioArriendos.obtenerRepositorio();
+
+        Collections.sort(arriendosOrdenados);
+
+        return arriendosOrdenados;
     }
 }

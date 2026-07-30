@@ -37,7 +37,6 @@ public class Arriendo implements Comparable<Arriendo>{
         this.arriendoFinalizado = false;
 
         this.garantiaCobrada = garantiaCobrada;
-        this.multa = multa;
     }
 
     // metodo para indicar la devolucion de un equipo
@@ -110,6 +109,10 @@ public class Arriendo implements Comparable<Arriendo>{
 
     public boolean isArriendoFinalizado() {
         return arriendoFinalizado;
+    }
+
+    public int getGarantiaCobrada() {
+        return garantiaCobrada;
     }
 
     public boolean estaActivo(){
